@@ -23,7 +23,13 @@ app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:19006', 'exp://192.168.1.100:8081'],
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:19006', 
+    'http://192.168.50.33:19006',
+    'exp://192.168.50.33:8081',
+    '*' // Allow all origins for development
+  ],
   credentials: true,
 }));
 

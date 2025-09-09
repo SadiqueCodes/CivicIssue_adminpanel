@@ -8,6 +8,7 @@ import {
 } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import AdminApiService from '@/lib/api';
+import { newTheme } from '@/lib/theme';
 
 interface StatsGridProps {
   stats?: {
@@ -138,13 +139,15 @@ export default function StatsGrid({ stats: propStats, loading: propLoading }: St
           <Card 
             elevation={0} 
             sx={{ 
-              border: '1px solid #e0e0e0',
-              borderRadius: 1,
+              background: 'linear-gradient(135deg, ' + newTheme.colors.primary + ' 0%, ' + newTheme.colors.primary + '80 100%)',
+              borderRadius: 3,
               height: 140,
+              color: '#ffffff',
               '&:hover': {
-                borderColor: '#bdbdbd',
+                transform: 'translateY(-2px)',
+                boxShadow: newTheme.shadows.lg,
               },
-              transition: 'border-color 0.2s',
+              transition: 'all 0.3s ease',
             }}
           >
             <CardContent sx={{ p: 2.5 }}>
@@ -153,7 +156,7 @@ export default function StatsGrid({ stats: propStats, loading: propLoading }: St
                   <Typography 
                     variant="body2" 
                     sx={{ 
-                      color: '#757575',
+                      color: 'rgba(255,255,255,0.8)',
                       fontWeight: 500,
                       mb: 0.5,
                       fontSize: 13,
@@ -165,8 +168,8 @@ export default function StatsGrid({ stats: propStats, loading: propLoading }: St
                   <Typography 
                     variant="h5" 
                     sx={{ 
-                      fontWeight: 600,
-                      color: '#1a1a1a',
+                      fontWeight: 700,
+                      color: '#ffffff',
                       mb: 0.5,
                     }}
                   >
@@ -175,14 +178,14 @@ export default function StatsGrid({ stats: propStats, loading: propLoading }: St
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     {stat.change > 0 ? (
-                      <TrendingUp sx={{ fontSize: 14, color: '#757575' }} />
+                      <TrendingUp sx={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }} />
                     ) : (
-                      <TrendingDown sx={{ fontSize: 14, color: '#757575' }} />
+                      <TrendingDown sx={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }} />
                     )}
                     <Typography 
                       variant="caption" 
                       sx={{ 
-                        color: '#757575',
+                        color: 'rgba(255,255,255,0.8)',
                         fontWeight: 500,
                         fontSize: 11,
                       }}
@@ -199,7 +202,7 @@ export default function StatsGrid({ stats: propStats, loading: propLoading }: St
                         {stat.chartData.map((entry, idx) => (
                           <Cell 
                             key={`cell-${idx}`} 
-                            fill={idx === stat.chartData.length - 1 ? '#424242' : '#e0e0e0'} 
+                            fill={idx === stat.chartData.length - 1 ? '#ffffff' : 'rgba(255,255,255,0.3)'} 
                           />
                         ))}
                       </Bar>

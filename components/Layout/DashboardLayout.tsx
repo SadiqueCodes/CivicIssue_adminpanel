@@ -44,10 +44,10 @@ const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: 8,
-  backgroundColor: '#f5f5f5',
+  backgroundColor: '#ffffff',
   border: '1px solid #e0e0e0',
   '&:hover': {
-    backgroundColor: '#fafafa',
+    backgroundColor: '#f5f5f5',
   },
   marginLeft: theme.spacing(2),
   width: '320px',
@@ -97,23 +97,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ];
 
   const drawer = (
-    <Box sx={{ height: '100%', backgroundColor: '#fafafa' }}>
+    <Box sx={{ height: '100%', backgroundColor: '#212121' }}>
       {/* Logo */}
       <Box sx={{ 
         p: 2.5,
-        borderBottom: '1px solid #e0e0e0',
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
       }}>
         <Typography 
           variant="h6" 
           sx={{ 
             fontWeight: 600,
-            color: '#1a1a1a',
+            color: '#ffffff',
             letterSpacing: '-0.5px'
           }}
         >
           CivicPanel
         </Typography>
-        <Typography variant="caption" sx={{ color: '#757575' }}>
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
           Issue Management System
         </Typography>
       </Box>
@@ -129,11 +129,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 borderRadius: 1,
                 mb: 0.5,
                 '&:hover': {
-                  backgroundColor: '#f0f0f0',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
                 },
               }}
             >
-              <ListItemIcon sx={{ color: '#424242', minWidth: 36 }}>
+              <ListItemIcon sx={{ color: '#ffffff', minWidth: 36 }}>
                 {item.icon}
               </ListItemIcon>
               <ListItemText 
@@ -141,7 +141,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 primaryTypographyProps={{
                   fontSize: 14,
                   fontWeight: 400,
-                  color: '#424242'
+                  color: '#ffffff'
                 }}
               />
             </ListItemButton>
@@ -149,25 +149,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         ))}
       </List>
       
-      <Divider sx={{ mx: 2 }} />
-      
-      {/* Settings */}
-      <List sx={{ px: 1, py: 1 }}>
-        <ListItem disablePadding>
-          <ListItemButton sx={{ borderRadius: 1 }}>
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <Settings sx={{ fontSize: 20, color: '#424242' }} />
-            </ListItemIcon>
-            <ListItemText 
-              primary="Settings"
-              primaryTypographyProps={{
-                fontSize: 14,
-                color: '#424242'
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
-      </List>
     </Box>
   );
 
@@ -192,16 +173,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           >
             <MenuIcon />
           </IconButton>
-          
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon sx={{ fontSize: 20 }} />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search..."
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search>
           
           <Box sx={{ flexGrow: 1 }} />
           

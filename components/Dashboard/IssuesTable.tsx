@@ -20,6 +20,7 @@ import {
   MoreHoriz,
 } from '@mui/icons-material';
 import AdminApiService from '@/lib/api';
+import { newTheme } from '@/lib/theme';
 
 interface Issue {
   id: string;
@@ -234,15 +235,18 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
                       sx={{
                         px: 1,
                         py: 0.25,
-                        borderRadius: 0.5,
+                        borderRadius: 3,
                         fontSize: 11,
-                        fontWeight: 500,
-                        backgroundColor: '#f0f0f0',
-                        color: '#424242',
-                        border: '1px solid #e0e0e0',
+                        fontWeight: 600,
+                        backgroundColor: 
+                          issue.status === 'new' ? newTheme.colors.status.new :
+                          issue.status === 'in-progress' ? newTheme.colors.status.inProgress :
+                          issue.status === 'resolved' ? newTheme.colors.status.resolved : '#f0f0f0',
+                        color: '#ffffff',
                         width: 85,
                         textAlign: 'center',
                         display: 'inline-block',
+                        textTransform: 'capitalize',
                       }}
                     >
                       {issue.status}
