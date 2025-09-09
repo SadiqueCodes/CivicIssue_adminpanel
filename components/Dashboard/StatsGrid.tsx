@@ -1,11 +1,13 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Grid, Card, CardContent, Typography, Box, Skeleton } from '@mui/material';
 import { 
   TrendingUp, 
   TrendingDown,
 } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import AdminApiService from '@/lib/api';
 
 interface StatsGridProps {
   stats?: {
@@ -22,7 +24,32 @@ interface ChartData {
   value: number;
 }
 
-export default function StatsGrid({ stats, loading }: StatsGridProps) {
+export default function StatsGrid({ stats: propStats, loading: propLoading }: StatsGridProps) {
+  const [stats, setStats] = useState(propStats);
+  const [loading, setLoading] = useState(propLoading || false);
+
+  useEffect(() => {
+    if (!propStats) {
+      loadStats();
+    }
+  }, [propStats]);
+
+  const loadStats = async () => {
+    try {
+      setLoading(true);
+      const data = await AdminApiService.getStats();
+      setStats({
+        totalIssues: data.totalIssues || 0,
+        resolvedToday: data.resolvedThisWeek || 0,
+        inProgress: data.inProgressIssues || 0,
+        criticalIssues: data.newIssues || 0,
+      });
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const statCards = [
     {
       title: 'Total Issues',

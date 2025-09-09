@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Table,
@@ -19,6 +19,7 @@ import {
   Search,
   MoreHoriz,
 } from '@mui/icons-material';
+import AdminApiService from '@/lib/api';
 
 interface Issue {
   id: string;
@@ -41,10 +42,51 @@ interface IssuesTableProps {
   loading?: boolean;
 }
 
-export default function IssuesTable({ issues = [], onIssueSelect, loading }: IssuesTableProps) {
+export default function IssuesTable({ issues: propIssues = [], onIssueSelect, loading: propLoading }: IssuesTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  const [issues, setIssues] = useState(propIssues);
+  const [loading, setLoading] = useState(propLoading || false);
+
+  useEffect(() => {
+    if (!propIssues.length) {
+      loadIssues();
+    }
+  }, [propIssues]);
+
+  const loadIssues = async () => {
+    try {
+      setLoading(true);
+      const response = await AdminApiService.getIssues({
+        page: page + 1,
+        limit: rowsPerPage,
+        search: searchTerm || undefined,
+      });
+      
+      // Transform backend data to component format
+      const transformedIssues = response.issues.map((issue: any) => ({
+        id: issue.id,
+        title: issue.title,
+        category: issue.category,
+        location: {
+          lat: issue.latitude,
+          lng: issue.longitude,
+        },
+        address: issue.address,
+        priority: issue.priority,
+        status: issue.status,
+        assignedTo: issue.assignee?.name,
+        reportedAt: new Date(issue.createdAt),
+      }));
+      
+      setIssues(transformedIssues);
+    } catch (error) {
+      console.error('Failed to load issues:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const demoIssues: Issue[] = [
     {
@@ -82,7 +124,7 @@ export default function IssuesTable({ issues = [], onIssueSelect, loading }: Iss
     },
   ];
 
-  const displayIssues = issues.length > 0 ? issues : demoIssues;
+  const displayIssues = issues;
   const filteredIssues = displayIssues.filter(issue => {
     const matchesSearch = issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          issue.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
