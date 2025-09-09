@@ -10,23 +10,15 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Chip,
-  IconButton,
   Typography,
-  Button,
   TextField,
   InputAdornment,
-  Paper,
-  Skeleton,
+  IconButton,
 } from '@mui/material';
 import {
-  Visibility,
-  Assignment,
   Search,
-  FilterList,
-  Download,
+  MoreHoriz,
 } from '@mui/icons-material';
-import { format } from 'date-fns';
 
 interface Issue {
   id: string;
@@ -40,7 +32,7 @@ interface Issue {
   priority: 'high' | 'medium' | 'low';
   status: 'new' | 'in-progress' | 'resolved';
   assignedTo?: string;
-  reportedAt: Date;
+  reportedAt: Date | string;
 }
 
 interface IssuesTableProps {
@@ -53,9 +45,7 @@ export default function IssuesTable({ issues = [], onIssueSelect, loading }: Iss
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  // Demo data if no issues provided
   const demoIssues: Issue[] = [
     {
       id: '#1284',
@@ -90,141 +80,86 @@ export default function IssuesTable({ issues = [], onIssueSelect, loading }: Iss
       assignedTo: 'Team C',
       reportedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
     },
-    {
-      id: '#1281',
-      title: 'Graffiti on Bridge',
-      category: 'Vandalism',
-      location: { lat: 40.7580, lng: -73.9855 },
-      address: 'Bridge Underpass',
-      priority: 'low',
-      status: 'in-progress',
-      assignedTo: 'Team D',
-      reportedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    },
-    {
-      id: '#1280',
-      title: 'Water Leak',
-      category: 'Water',
-      location: { lat: 40.7489, lng: -73.9680 },
-      address: 'Oak Street',
-      priority: 'high',
-      status: 'new',
-      assignedTo: undefined,
-      reportedAt: new Date(Date.now() - 48 * 60 * 60 * 1000),
-    },
   ];
 
   const displayIssues = issues.length > 0 ? issues : demoIssues;
-
   const filteredIssues = displayIssues.filter(issue => {
     const matchesSearch = issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          issue.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          issue.address.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || issue.status === filterStatus;
-    return matchesSearch && matchesFilter;
+    return matchesSearch;
   });
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'error';
-      case 'medium': return 'warning';
-      case 'low': return 'success';
-      default: return 'default';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'new': return 'warning';
-      case 'in-progress': return 'info';
-      case 'resolved': return 'success';
-      default: return 'default';
-    }
-  };
-
-  const formatTimeAgo = (date: Date) => {
-    const hours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
+  const formatTimeAgo = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const hours = Math.floor((Date.now() - dateObj.getTime()) / (1000 * 60 * 60));
     if (hours < 1) return 'Just now';
-    if (hours < 24) return `${hours} hours ago`;
+    if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
-    if (days === 1) return '1 day ago';
-    return `${days} days ago`;
+    if (days === 1) return '1d ago';
+    return `${days}d ago`;
   };
-
-  if (loading) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
-        <Skeleton variant="rectangular" height={400} />
-      </Box>
-    );
-  }
 
   return (
-    <Paper>
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h6">Recent Issues</Typography>
-          <Button
-            startIcon={<Download />}
-            variant="outlined"
-            size="small"
-          >
-            Export
-          </Button>
-        </Box>
-        
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <Box>
+      {/* Header */}
+      <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+            Recent Issues
+          </Typography>
           <TextField
             size="small"
-            placeholder="Search issues..."
+            placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search />
+                  <Search sx={{ fontSize: 18, color: '#757575' }} />
                 </InputAdornment>
               ),
             }}
-            sx={{ flex: 1, maxWidth: 400 }}
+            sx={{
+              width: 200,
+              '& .MuiOutlinedInput-root': {
+                fontSize: 13,
+                borderRadius: 1,
+                '& fieldset': {
+                  borderColor: '#e0e0e0',
+                },
+              },
+            }}
           />
-          
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            {['all', 'new', 'in-progress', 'resolved'].map((status) => (
-              <Chip
-                key={status}
-                label={status.charAt(0).toUpperCase() + status.slice(1)}
-                onClick={() => setFilterStatus(status)}
-                color={filterStatus === status ? 'primary' : 'default'}
-                variant={filterStatus === status ? 'filled' : 'outlined'}
-              />
-            ))}
-          </Box>
         </Box>
       </Box>
 
+      {/* Table */}
       <TableContainer>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Issue Type</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Priority</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Assigned To</TableCell>
-              <TableCell>Reported</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                ID
+              </TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                Issue
+              </TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                Location
+              </TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                Status
+              </TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                Assigned
+              </TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                Time
+              </TableCell>
+              <TableCell sx={{ color: '#757575', fontSize: 12, fontWeight: 500, borderBottom: '1px solid #e0e0e0' }}>
+                
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -234,42 +169,52 @@ export default function IssuesTable({ issues = [], onIssueSelect, loading }: Iss
                 <TableRow
                   key={issue.id}
                   hover
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ 
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: '#fafafa',
+                    },
+                  }}
                   onClick={() => onIssueSelect?.(issue)}
                 >
-                  <TableCell>
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 500 }}>
-                      {issue.id}
-                    </Typography>
+                  <TableCell sx={{ fontSize: 13, color: '#424242', borderBottom: '1px solid #f0f0f0' }}>
+                    {issue.id}
                   </TableCell>
-                  <TableCell>{issue.title}</TableCell>
-                  <TableCell>{issue.address}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={issue.priority}
-                      color={getPriorityColor(issue.priority) as any}
-                      size="small"
-                    />
+                  <TableCell sx={{ fontSize: 13, color: '#1a1a1a', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
+                    {issue.title}
                   </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={issue.status.replace('-', ' ')}
-                      color={getStatusColor(issue.status) as any}
-                      size="small"
-                      variant="outlined"
-                    />
+                  <TableCell sx={{ fontSize: 13, color: '#424242', borderBottom: '1px solid #f0f0f0' }}>
+                    {issue.address}
                   </TableCell>
-                  <TableCell>{issue.assignedTo || 'Unassigned'}</TableCell>
-                  <TableCell>{formatTimeAgo(issue.reportedAt)}</TableCell>
-                  <TableCell>
-                    <IconButton size="small" onClick={(e) => {
-                      e.stopPropagation();
-                      onIssueSelect?.(issue);
-                    }}>
-                      <Visibility />
-                    </IconButton>
-                    <IconButton size="small">
-                      <Assignment />
+                  <TableCell sx={{ fontSize: 13, borderBottom: '1px solid #f0f0f0' }}>
+                    <Box
+                      component="span"
+                      sx={{
+                        px: 1,
+                        py: 0.25,
+                        borderRadius: 0.5,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        backgroundColor: '#f0f0f0',
+                        color: '#424242',
+                        border: '1px solid #e0e0e0',
+                        width: 85,
+                        textAlign: 'center',
+                        display: 'inline-block',
+                      }}
+                    >
+                      {issue.status}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ fontSize: 13, color: '#424242', borderBottom: '1px solid #f0f0f0' }}>
+                    {issue.assignedTo || '-'}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: 13, color: '#757575', borderBottom: '1px solid #f0f0f0' }}>
+                    {formatTimeAgo(issue.reportedAt)}
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: '1px solid #f0f0f0' }}>
+                    <IconButton size="small" sx={{ color: '#757575' }}>
+                      <MoreHoriz sx={{ fontSize: 18 }} />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -284,9 +229,22 @@ export default function IssuesTable({ issues = [], onIssueSelect, loading }: Iss
         count={filteredIssues.length}
         rowsPerPage={rowsPerPage}
         page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        onPageChange={(e, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
+        sx={{
+          borderTop: '1px solid #e0e0e0',
+          '.MuiTablePagination-toolbar': {
+            minHeight: 48,
+          },
+          '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+            fontSize: 13,
+            color: '#757575',
+          },
+        }}
       />
-    </Paper>
+    </Box>
   );
 }

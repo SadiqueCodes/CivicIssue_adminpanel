@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Box, Paper, Typography, Chip, IconButton } from '@mui/material';
-import { Layers, MyLocation, ZoomIn, ZoomOut } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 
 // You'll need to set your Mapbox token
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'your-mapbox-token';
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoieW91ci11c2VybmFtZSIsImEiOiJ5b3VyLXRva2VuIn0.xxxxx';
 
 interface Issue {
   id: string;
@@ -32,38 +31,25 @@ export default function IssueMap({ issues = [], onIssueSelect, selectedIssue }: 
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
-  const [mapStyle, setMapStyle] = useState('streets-v12');
-  const [viewport, setViewport] = useState({
-    lat: 40.7128,
-    lng: -74.0060,
-    zoom: 12,
-  });
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    // Initialize map
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: `mapbox://styles/mapbox/${mapStyle}`,
-      center: [viewport.lng, viewport.lat],
-      zoom: viewport.zoom,
-    });
+    try {
+      // Initialize map with a minimal style
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/light-v11', // Minimal light style
+        center: [-74.0060, 40.7128], // NYC coordinates
+        zoom: 12,
+      });
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      // Add minimal navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
 
-    // Add geolocate control
-    map.current.addControl(
-      new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        trackUserLocation: true,
-        showUserHeading: true,
-      }),
-      'top-right'
-    );
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
 
     return () => {
       map.current?.remove();
@@ -109,50 +95,30 @@ export default function IssueMap({ issues = [], onIssueSelect, selectedIssue }: 
       },
     ];
 
-    // Add markers for each issue
+    // Add markers with minimal styling
     displayIssues.forEach(issue => {
       const el = document.createElement('div');
       el.className = 'custom-marker';
-      el.style.width = '32px';
-      el.style.height = '32px';
+      el.style.width = '24px';
+      el.style.height = '24px';
       el.style.borderRadius = '50%';
-      el.style.border = '3px solid white';
-      el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+      el.style.backgroundColor = '#424242';
+      el.style.border = '2px solid white';
+      el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
       el.style.cursor = 'pointer';
-      el.style.display = 'flex';
-      el.style.alignItems = 'center';
-      el.style.justifyContent = 'center';
-      el.style.fontSize = '16px';
-      el.style.color = 'white';
-      
-      // Set color based on priority
-      if (issue.priority === 'high') {
-        el.style.backgroundColor = '#fc5c65';
-        el.innerHTML = '⚠️';
-      } else if (issue.priority === 'medium') {
-        el.style.backgroundColor = '#f6ad55';
-        el.innerHTML = '⚡';
-      } else {
-        el.style.backgroundColor = '#48bb78';
-        el.innerHTML = '✓';
-      }
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([issue.location.lng, issue.location.lat])
         .setPopup(
-          new mapboxgl.Popup({ offset: 25 })
+          new mapboxgl.Popup({ offset: 25, closeButton: false })
             .setHTML(`
-              <div style="padding: 8px;">
-                <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">${issue.title}</h3>
-                <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;">
-                  <strong>Category:</strong> ${issue.category}
-                </p>
-                <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;">
-                  <strong>Status:</strong> ${issue.status}
-                </p>
-                <p style="margin: 0; font-size: 12px; color: #666;">
-                  <strong>Location:</strong> ${issue.address}
-                </p>
+              <div style="padding: 8px; min-width: 150px;">
+                <div style="font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px;">
+                  ${issue.title}
+                </div>
+                <div style="font-size: 12px; color: #757575;">
+                  ${issue.address}
+                </div>
               </div>
             `)
         )
@@ -186,67 +152,37 @@ export default function IssueMap({ issues = [], onIssueSelect, selectedIssue }: 
       zoom: 15,
       essential: true,
     });
-
-    // Open popup for selected marker
-    const marker = markers.current.find(m => {
-      const lngLat = m.getLngLat();
-      return lngLat.lng === selectedIssue.location.lng && lngLat.lat === selectedIssue.location.lat;
-    });
-    
-    if (marker) {
-      marker.getPopup()?.addTo(map.current);
-    }
   }, [selectedIssue]);
 
-  const handleStyleChange = () => {
-    const styles = ['streets-v12', 'satellite-v9', 'dark-v11', 'light-v11'];
-    const currentIndex = styles.indexOf(mapStyle);
-    const nextStyle = styles[(currentIndex + 1) % styles.length];
-    setMapStyle(nextStyle);
-    
-    if (map.current) {
-      map.current.setStyle(`mapbox://styles/mapbox/${nextStyle}`);
-    }
-  };
+  // Fallback if Mapbox token is not set
+  if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+    return (
+      <Box 
+        sx={{ 
+          height: '100%', 
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#fafafa',
+          border: '1px solid #e0e0e0',
+        }}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="body2" sx={{ color: '#757575', mb: 1 }}>
+            Map View Unavailable
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#9e9e9e' }}>
+            Please configure Mapbox token in .env.local
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainer} style={{ height: '100%', width: '100%' }} />
-      
-      {/* Map Controls Overlay */}
-      <Paper
-        sx={{
-          position: 'absolute',
-          top: 16,
-          left: 16,
-          p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-        }}
-      >
-        <Typography variant="h6">Live Issue Map</Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Chip label="🔴 High: 3" size="small" />
-          <Chip label="🟡 Medium: 7" size="small" />
-          <Chip label="🟢 Low: 12" size="small" />
-        </Box>
-      </Paper>
-
-      {/* Style Switcher */}
-      <IconButton
-        sx={{
-          position: 'absolute',
-          bottom: 100,
-          right: 16,
-          bgcolor: 'white',
-          boxShadow: 2,
-          '&:hover': { bgcolor: 'white' },
-        }}
-        onClick={handleStyleChange}
-      >
-        <Layers />
-      </IconButton>
     </Box>
   );
 }

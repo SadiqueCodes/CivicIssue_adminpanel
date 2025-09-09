@@ -23,13 +23,13 @@ export default function HomePage() {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        backgroundColor: '#fafafa',
       }}
     >
-      <Box sx={{ textAlign: 'center', color: 'white' }}>
-        <CircularProgress color="inherit" size={60} />
-        <Box sx={{ mt: 4, fontSize: 24, fontWeight: 600 }}>
-          Loading CivicIssue Admin Panel...
+      <Box sx={{ textAlign: 'center' }}>
+        <CircularProgress sx={{ color: '#424242' }} size={40} />
+        <Box sx={{ mt: 2, fontSize: 16, fontWeight: 500, color: '#424242' }}>
+          Loading Admin Panel...
         </Box>
       </Box>
     </Box>

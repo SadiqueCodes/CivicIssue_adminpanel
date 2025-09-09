@@ -9,6 +9,8 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
+} from '@mui/material';
+import {
   Timeline,
   TimelineItem,
   TimelineSeparator,
@@ -29,7 +31,7 @@ interface Activity {
   type: 'issue_created' | 'issue_assigned' | 'issue_resolved' | 'team_dispatched';
   title: string;
   description: string;
-  timestamp: Date;
+  timestamp: Date | string;
   icon: React.ReactNode;
   color: 'success' | 'warning' | 'info' | 'error';
 }
@@ -80,8 +82,9 @@ export default function ActivityFeed({ activities = [] }: ActivityFeedProps) {
 
   const displayActivities = activities.length > 0 ? activities : demoActivities;
 
-  const formatTime = (date: Date) => {
-    const minutes = Math.floor((Date.now() - date.getTime()) / (1000 * 60));
+  const formatTime = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const minutes = Math.floor((Date.now() - dateObj.getTime()) / (1000 * 60));
     if (minutes < 1) return 'Just now';
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);

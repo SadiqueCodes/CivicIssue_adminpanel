@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Grid, Box, Container } from '@mui/material';
+import { Grid, Box, Container, Paper, Typography } from '@mui/material';
 import StatsGrid from '@/components/Dashboard/StatsGrid';
 import IssueMap from '@/components/Map/IssueMap';
 import AIAssistant from '@/components/AIChat/AIAssistant';
@@ -28,7 +28,7 @@ export default function DashboardPage() {
     const latestMessage = messages[messages.length - 1];
     if (latestMessage?.type === 'new_issue') {
       toast('New issue reported!', {
-        icon: '🚨',
+        icon: '🔔',
       });
       refetch();
     }
@@ -41,10 +41,8 @@ export default function DashboardPage() {
   const handleAIAction = async (action: any) => {
     console.log('AI Action:', action);
     if (action.type === 'assign') {
-      // Handle assignment
       toast.success(`Issue assigned to ${action.assignee}`);
     } else if (action.type === 'prioritize') {
-      // Handle prioritization
       toast.success('Issue priority updated');
     }
     refetch();
@@ -52,23 +50,35 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
-        {/* Stats Overview */}
-        <StatsGrid stats={stats} loading={loading} />
+      <Box sx={{ p: 3 }}>
+        {/* Simple Header */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+            Dashboard
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#757575', mt: 0.5 }}>
+            Overview of civic issues and management metrics
+          </Typography>
+        </Box>
 
-        {/* Main Content Grid */}
-        <Grid container spacing={3} sx={{ mt: 2 }}>
-          {/* Left Column - Map and Issues */}
+        {/* Stats */}
+        <Box sx={{ mb: 3 }}>
+          <StatsGrid stats={stats} loading={loading} />
+        </Box>
+
+        {/* Main Grid */}
+        <Grid container spacing={3}>
+          {/* Left Side */}
           <Grid item xs={12} lg={8}>
-            {/* Interactive Map */}
-            <Box
-              sx={{
-                height: 450,
-                mb: 3,
-                borderRadius: 2,
+            {/* Map */}
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 1,
                 overflow: 'hidden',
-                boxShadow: 1,
-                backgroundColor: 'background.paper',
+                mb: 3,
+                height: 400
               }}
             >
               <IssueMap 
@@ -76,15 +86,15 @@ export default function DashboardPage() {
                 onIssueSelect={handleIssueSelect}
                 selectedIssue={selectedIssue}
               />
-            </Box>
+            </Paper>
 
-            {/* Issues Table */}
-            <Box
-              sx={{
-                borderRadius: 2,
-                overflow: 'hidden',
-                boxShadow: 1,
-                backgroundColor: 'background.paper',
+            {/* Table */}
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 1,
+                overflow: 'hidden' 
               }}
             >
               <IssuesTable 
@@ -92,20 +102,35 @@ export default function DashboardPage() {
                 onIssueSelect={handleIssueSelect}
                 loading={loading}
               />
-            </Box>
+            </Paper>
           </Grid>
 
-          {/* Right Column - AI Assistant and Activity */}
+          {/* Right Side */}
           <Grid item xs={12} lg={4}>
-            {/* AI Assistant */}
-            <Box
-              sx={{
-                height: 400,
+            {/* Priority Queue */}
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 1,
                 mb: 3,
-                borderRadius: 2,
-                overflow: 'hidden',
-                boxShadow: 1,
-                backgroundColor: 'background.paper',
+                overflow: 'hidden'
+              }}
+            >
+              <PriorityQueue 
+                issues={issues?.filter(i => i.priority === 'high')}
+                onIssueSelect={handleIssueSelect}
+              />
+            </Paper>
+
+            {/* AI Assistant */}
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 1,
+                height: 400,
+                overflow: 'hidden'
               }}
             >
               <AIAssistant
@@ -116,38 +141,10 @@ export default function DashboardPage() {
                 }}
                 onActionSuggested={handleAIAction}
               />
-            </Box>
-
-            {/* Priority Queue */}
-            <Box
-              sx={{
-                mb: 3,
-                borderRadius: 2,
-                overflow: 'hidden',
-                boxShadow: 1,
-                backgroundColor: 'background.paper',
-              }}
-            >
-              <PriorityQueue 
-                issues={issues?.filter(i => i.priority === 'high')}
-                onIssueSelect={handleIssueSelect}
-              />
-            </Box>
-
-            {/* Activity Feed */}
-            <Box
-              sx={{
-                borderRadius: 2,
-                overflow: 'hidden',
-                boxShadow: 1,
-                backgroundColor: 'background.paper',
-              }}
-            >
-              <ActivityFeed activities={activities} />
-            </Box>
+            </Paper>
           </Grid>
         </Grid>
-      </Container>
+      </Box>
     </DashboardLayout>
   );
 }
