@@ -130,6 +130,15 @@ export default function Reports() {
                       fontSize: 14,
                       borderRadius: 1,
                       '& fieldset': { borderColor: '#e0e0e0' },
+                      '&:hover fieldset': {
+                        borderColor: '#b0d1c7',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#b0d1c7',
+                      },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#b0d1c7',
                     },
                   }}
                 >
@@ -154,6 +163,15 @@ export default function Reports() {
                       fontSize: 14,
                       borderRadius: 1,
                       '& fieldset': { borderColor: '#e0e0e0' },
+                      '&:hover fieldset': {
+                        borderColor: '#b0d1c7',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#b0d1c7',
+                      },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#b0d1c7',
                     },
                   }}
                 >
@@ -179,6 +197,15 @@ export default function Reports() {
                       fontSize: 14,
                       borderRadius: 1,
                       '& fieldset': { borderColor: '#e0e0e0' },
+                      '&:hover fieldset': {
+                        borderColor: '#b0d1c7',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#b0d1c7',
+                      },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#b0d1c7',
                     },
                   }}
                 >

@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { Grid, Box, Container, Paper, Typography } from '@mui/material';
 import StatsGrid from '@/components/Dashboard/StatsGrid';
 import IssueMap from '@/components/Map/IssueMap';
-import AIAssistant from '@/components/AIChat/AIAssistant';
 import IssuesTable from '@/components/Dashboard/IssuesTable';
 import PriorityQueue from '@/components/Dashboard/PriorityQueue';
 import ActivityFeed from '@/components/Dashboard/ActivityFeed';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useWebSocket } from '@/lib/hooks/useWebSocket';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import toast from 'react-hot-toast';
@@ -38,18 +38,10 @@ export default function DashboardPage() {
     setSelectedIssue(issue);
   };
 
-  const handleAIAction = async (action: any) => {
-    console.log('AI Action:', action);
-    if (action.type === 'assign') {
-      toast.success(`Issue assigned to ${action.assignee}`);
-    } else if (action.type === 'prioritize') {
-      toast.success('Issue priority updated');
-    }
-    refetch();
-  };
 
   return (
-    <DashboardLayout>
+    <ProtectedRoute>
+      <DashboardLayout>
       <Box sx={{ p: 3 }}>
         {/* Simple Header */}
         <Box sx={{ mb: 3 }}>
@@ -66,35 +58,19 @@ export default function DashboardPage() {
           <StatsGrid stats={stats} loading={loading} />
         </Box>
 
-        {/* Main Grid */}
+        {/* Main Content Area */}
         <Grid container spacing={3}>
-          {/* Left Side */}
-          <Grid item xs={12} lg={8}>
-            {/* Map */}
+          {/* Top Row - Recent Issues and Priority Queue */}
+          <Grid item xs={12} md={8}>
             <Paper 
               elevation={0} 
               sx={{ 
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
                 overflow: 'hidden',
-                mb: 3,
-                height: 400
-              }}
-            >
-              <IssueMap 
-                issues={issues}
-                onIssueSelect={handleIssueSelect}
-                selectedIssue={selectedIssue}
-              />
-            </Paper>
-
-            {/* Table */}
-            <Paper 
-              elevation={0} 
-              sx={{ 
-                border: '1px solid #e0e0e0',
-                borderRadius: 1,
-                overflow: 'hidden' 
+                height: 450,
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
               <IssuesTable 
@@ -104,17 +80,15 @@ export default function DashboardPage() {
               />
             </Paper>
           </Grid>
-
-          {/* Right Side */}
-          <Grid item xs={12} lg={4}>
-            {/* Priority Queue */}
+          
+          <Grid item xs={12} md={4}>
             <Paper 
               elevation={0} 
               sx={{ 
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
-                mb: 3,
-                overflow: 'hidden'
+                overflow: 'hidden',
+                height: 450
               }}
             >
               <PriorityQueue 
@@ -122,29 +96,43 @@ export default function DashboardPage() {
                 onIssueSelect={handleIssueSelect}
               />
             </Paper>
+          </Grid>
 
-            {/* AI Assistant */}
+          {/* Second Row - Recent Activity and Map */}
+          <Grid item xs={12} md={4}>
             <Paper 
               elevation={0} 
               sx={{ 
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
-                height: 400,
-                overflow: 'hidden'
+                overflow: 'hidden',
+                height: 450
               }}
             >
-              <AIAssistant
-                context={{
-                  selectedIssue,
-                  stats,
-                  recentIssues: issues?.slice(0, 5),
-                }}
-                onActionSuggested={handleAIAction}
+              <ActivityFeed activities={activities} />
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={8}>
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 1,
+                overflow: 'hidden',
+                height: 450
+              }}
+            >
+              <IssueMap 
+                issues={issues}
+                onIssueSelect={handleIssueSelect}
+                selectedIssue={selectedIssue}
               />
             </Paper>
           </Grid>
         </Grid>
       </Box>
-    </DashboardLayout>
+      </DashboardLayout>
+    </ProtectedRoute>
   );
 }

@@ -40,49 +40,56 @@ interface ActivityFeedProps {
   activities?: Activity[];
 }
 
-export default function ActivityFeed({ activities = [] }: ActivityFeedProps) {
+export default function ActivityFeed({ activities}: ActivityFeedProps) {
   const demoActivities: Activity[] = [
     {
       id: '1',
       type: 'issue_resolved',
       title: 'Issue Resolved',
-      description: 'Pothole on Elm Street has been fixed by Team A',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-      icon: <CheckCircle />,
+      description: 'Pothole on Main Road Ranchi has been fixed by Ranchi Municipal Team',
+      timestamp: '30m ago',
+      icon: <CheckCircle fontSize="small" />,
       color: 'success',
     },
     {
       id: '2',
       type: 'team_dispatched',
       title: 'Team Dispatched',
-      description: 'Team B dispatched to water leak on Oak Street',
-      timestamp: new Date(Date.now() - 60 * 60 * 1000),
-      icon: <Build />,
+      description: 'Municipal team dispatched to water pipe leak in Lalpur, Ranchi',
+      timestamp: '1h ago',
+      icon: <Build fontSize="small" />,
       color: 'info',
     },
     {
       id: '3',
       type: 'issue_created',
       title: 'New Critical Issue',
-      description: 'Traffic light malfunction reported at Downtown Junction',
-      timestamp: new Date(Date.now() - 90 * 60 * 1000),
-      icon: <Warning />,
+      description: 'Traffic signal malfunction reported at Albert Ekka Chowk, Ranchi',
+      timestamp: '1h ago',
+      icon: <Warning fontSize="small" />,
       color: 'error',
     },
     {
       id: '4',
       type: 'issue_assigned',
       title: 'Issue Assigned',
-      description: 'Graffiti removal assigned to Team D',
-      timestamp: new Date(Date.now() - 120 * 60 * 1000),
-      icon: <Assignment />,
+      description: 'Street cleaning work assigned to Dhanbad Municipal Corporation Team',
+      timestamp: '2h ago',
+      icon: <Assignment fontSize="small" />,
       color: 'warning',
     },
   ];
 
-  const displayActivities = activities.length > 0 ? activities : demoActivities;
+  // Always use demo activities for now to avoid rendering issues
+  const displayActivities = demoActivities;
 
   const formatTime = (date: Date | string) => {
+    // If it's already a formatted string, return it
+    if (typeof date === 'string' && date.includes('ago')) {
+      return date;
+    }
+    
+    // Otherwise, format the date
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     const minutes = Math.floor((Date.now() - dateObj.getTime()) / (1000 * 60));
     if (minutes < 1) return 'Just now';
@@ -93,34 +100,97 @@ export default function ActivityFeed({ activities = [] }: ActivityFeedProps) {
   };
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
+    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 2 }}>
         Recent Activity
       </Typography>
 
-      <Timeline position="right" sx={{ p: 0, m: 0 }}>
+      <Box sx={{ 
+        flex: 1, 
+        overflowY: 'auto', 
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '-ms-overflow-style': 'none',
+        'scrollbar-width': 'none',
+      }}>
         {displayActivities.map((activity, index) => (
-          <TimelineItem key={activity.id}>
-            <TimelineSeparator>
-              <TimelineDot color={activity.color} variant="outlined">
+          <Box key={activity.id} sx={{ display: 'flex', mb: 3, alignItems: 'flex-start' }}>
+            {/* Left side - Dot and Line */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 2 }}>
+              <Box
+                sx={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  border: `2px solid ${
+                    activity.color === 'success' ? '#4caf50' :
+                    activity.color === 'warning' ? '#ff9800' :
+                    activity.color === 'error' ? '#f44336' : '#b0d1c7'
+                  }`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'white',
+                  color: activity.color === 'success' ? '#4caf50' :
+                    activity.color === 'warning' ? '#ff9800' :
+                    activity.color === 'error' ? '#f44336' : '#b0d1c7',
+                  '& svg': {
+                    fontSize: 14
+                  }
+                }}
+              >
                 {activity.icon}
-              </TimelineDot>
-              {index < displayActivities.length - 1 && <TimelineConnector />}
-            </TimelineSeparator>
-            <TimelineContent sx={{ pb: 3 }}>
-              <Typography variant="subtitle2" component="div" fontWeight={600}>
+              </Box>
+              {index < displayActivities.length - 1 && (
+                <Box
+                  sx={{
+                    width: 2,
+                    height: 40,
+                    backgroundColor: '#e0e0e0',
+                    mt: 1
+                  }}
+                />
+              )}
+            </Box>
+            
+            {/* Right side - Content */}
+            <Box sx={{ flex: 1, pt: -0.1 }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  fontWeight: 600,
+                  color: '#1a1a1a',
+                  mb: 0.5,
+                  fontSize: 14,
+                }}
+              >
                 {activity.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#757575',
+                  fontSize: 13,
+                  lineHeight: 1.4,
+                  mb: 0.5,
+                }}
+              >
                 {activity.description}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: '#9e9e9e',
+                  fontSize: 12,
+                }}
+              >
                 {formatTime(activity.timestamp)}
               </Typography>
-            </TimelineContent>
-          </TimelineItem>
+            </Box>
+          </Box>
         ))}
-      </Timeline>
-    </Paper>
+      </Box>
+    </Box>
   );
 }

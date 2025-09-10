@@ -17,38 +17,42 @@ export default function PriorityQueue({ issues = [], onIssueSelect }: PriorityQu
     {
       id: '1',
       title: 'Major pothole causing accidents',
-      address: 'Main St & 5th Ave',
+      address: 'Kanke Road, Ranchi',
       severity: 9.2,
     },
     {
       id: '2',
-      title: 'Water main break',
-      address: 'Oak Street',
+      title: 'Water pipe burst',
+      address: 'Upper Bazaar, Ranchi',
       severity: 8.8,
     },
     {
       id: '3',
-      title: 'Traffic light malfunction',
-      address: 'Downtown Junction',
+      title: 'Traffic signal malfunction',
+      address: 'Firayalal Chowk, Ranchi',
       severity: 8.5,
     },
   ];
 
-  const displayIssues = issues.length > 0 
-    ? issues.map(issue => ({
-        ...issue,
-        address: issue.address || 'Unknown location',
-        severity: issue.severity || 5.0,
-      }))
-    : demoIssues;
+  // Always use demo issues for now to avoid rendering issues
+  const displayIssues = demoIssues;
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 2 }}>
         Priority Queue
       </Typography>
 
-      <List sx={{ p: 0 }}>
+      <Box sx={{ 
+        flex: 1, 
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '-ms-overflow-style': 'none',
+        'scrollbar-width': 'none',
+      }}>
+        <List sx={{ p: 0 }}>
         {displayIssues.slice(0, 5).map((issue) => (
           <ListItem
             key={issue.id}
@@ -88,7 +92,8 @@ export default function PriorityQueue({ issues = [], onIssueSelect }: PriorityQu
             </Box>
           </ListItem>
         ))}
-      </List>
+        </List>
+      </Box>
     </Box>
   );
 }

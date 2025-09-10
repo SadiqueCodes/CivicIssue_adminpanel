@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/auth/AuthContext';
 import {
   Box,
   Typography,
@@ -33,6 +34,7 @@ import {
 } from '@mui/icons-material';
 
 export default function Settings() {
+  const { user, updateUser } = useAuth();
   const [notifications, setNotifications] = useState({
     emailAlerts: true,
     smsAlerts: false,
@@ -41,11 +43,31 @@ export default function Settings() {
   });
 
   const [profile, setProfile] = useState({
-    name: 'Admin User',
-    email: 'admin@city.gov',
-    phone: '+1 555-0123',
-    department: 'IT Administration',
+    name: user?.name || 'Admin User',
+    email: user?.email || 'admin@jharkhandgov.in',
+    phone: '+91 98765-43210',
+    department: 'Municipal Administration',
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.name,
+        email: user.email,
+        phone: '+91 98765-43210',
+        department: 'Municipal Administration',
+      });
+    }
+  }, [user]);
+
+  const handleSaveProfile = () => {
+    updateUser({
+      name: profile.name,
+      email: profile.email,
+    });
+    // You could add a toast notification here
+    console.log('Profile updated successfully');
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -94,6 +116,15 @@ export default function Settings() {
                         fontSize: 14,
                         borderRadius: 1,
                         '& fieldset': { borderColor: '#e0e0e0' },
+                        '&:hover fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#b0d1c7',
                       },
                     }}
                   />
@@ -112,6 +143,15 @@ export default function Settings() {
                         fontSize: 14,
                         borderRadius: 1,
                         '& fieldset': { borderColor: '#e0e0e0' },
+                        '&:hover fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#b0d1c7',
                       },
                     }}
                   />
@@ -130,6 +170,15 @@ export default function Settings() {
                         fontSize: 14,
                         borderRadius: 1,
                         '& fieldset': { borderColor: '#e0e0e0' },
+                        '&:hover fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#b0d1c7',
                       },
                     }}
                   />
@@ -148,6 +197,15 @@ export default function Settings() {
                         fontSize: 14,
                         borderRadius: 1,
                         '& fieldset': { borderColor: '#e0e0e0' },
+                        '&:hover fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#b0d1c7',
+                        },
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#b0d1c7',
                       },
                     }}
                   />
@@ -158,6 +216,7 @@ export default function Settings() {
                 <Button
                   variant="outlined"
                   startIcon={<Save />}
+                  onClick={handleSaveProfile}
                   sx={{
                     borderColor: '#e0e0e0',
                     color: '#424242',
@@ -215,6 +274,17 @@ export default function Settings() {
                       checked={notifications.emailAlerts}
                       onChange={(e) => setNotifications({...notifications, emailAlerts: e.target.checked})}
                       size="small"
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#b0d1c7',
+                          '&:hover': {
+                            backgroundColor: 'rgba(176, 209, 199, 0.08)',
+                          },
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#b0d1c7',
+                        },
+                      }}
                     />
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -230,6 +300,17 @@ export default function Settings() {
                       checked={notifications.smsAlerts}
                       onChange={(e) => setNotifications({...notifications, smsAlerts: e.target.checked})}
                       size="small"
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#b0d1c7',
+                          '&:hover': {
+                            backgroundColor: 'rgba(176, 209, 199, 0.08)',
+                          },
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#b0d1c7',
+                        },
+                      }}
                     />
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -245,6 +326,17 @@ export default function Settings() {
                       checked={notifications.pushNotifications}
                       onChange={(e) => setNotifications({...notifications, pushNotifications: e.target.checked})}
                       size="small"
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#b0d1c7',
+                          '&:hover': {
+                            backgroundColor: 'rgba(176, 209, 199, 0.08)',
+                          },
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#b0d1c7',
+                        },
+                      }}
                     />
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -260,6 +352,17 @@ export default function Settings() {
                       checked={notifications.weeklyReports}
                       onChange={(e) => setNotifications({...notifications, weeklyReports: e.target.checked})}
                       size="small"
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#b0d1c7',
+                          '&:hover': {
+                            backgroundColor: 'rgba(176, 209, 199, 0.08)',
+                          },
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#b0d1c7',
+                        },
+                      }}
                     />
                   </ListItemSecondaryAction>
                 </ListItem>

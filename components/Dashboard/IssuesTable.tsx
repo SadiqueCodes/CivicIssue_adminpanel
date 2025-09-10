@@ -92,10 +92,10 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
   const demoIssues: Issue[] = [
     {
       id: '#1284',
-      title: 'Pothole on Main Street',
+      title: 'Pothole on MG Road',
       category: 'Road',
-      location: { lat: 40.7128, lng: -74.0060 },
-      address: 'Main St & 5th Ave',
+      location: { lat: 23.3441, lng: 85.3096 },
+      address: 'Station Road, Ranchi',
       priority: 'high',
       status: 'new',
       assignedTo: undefined,
@@ -103,10 +103,10 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
     },
     {
       id: '#1283',
-      title: 'Broken Streetlight',
+      title: 'Broken Street Light',
       category: 'Lighting',
-      location: { lat: 40.7260, lng: -73.9960 },
-      address: 'Park Avenue',
+      location: { lat: 22.8046, lng: 86.2029 },
+      address: 'Circular Road, Jamshedpur',
       priority: 'medium',
       status: 'in-progress',
       assignedTo: 'Team A',
@@ -114,10 +114,10 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
     },
     {
       id: '#1282',
-      title: 'Overflowing Trash Bin',
+      title: 'Overflowing Garbage Bin',
       category: 'Sanitation',
-      location: { lat: 40.7080, lng: -74.0180 },
-      address: 'City Center',
+      location: { lat: 24.6292, lng: 85.2970 },
+      address: 'Kadma, Jamshedpur',
       priority: 'low',
       status: 'resolved',
       assignedTo: 'Team C',
@@ -125,7 +125,7 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
     },
   ];
 
-  const displayIssues = issues;
+  const displayIssues = issues && issues.length > 0 ? issues : demoIssues;
   const filteredIssues = displayIssues.filter(issue => {
     const matchesSearch = issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          issue.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,7 +144,7 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
   };
 
   return (
-    <Box>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -171,6 +171,15 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
                 '& fieldset': {
                   borderColor: '#e0e0e0',
                 },
+                '&:hover fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#b0d1c7',
               },
             }}
           />
@@ -178,7 +187,16 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
       </Box>
 
       {/* Table */}
-      <TableContainer>
+      <TableContainer sx={{ 
+        flex: 1,
+        maxHeight: '350px',
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '-ms-overflow-style': 'none',
+        'scrollbar-width': 'none',
+      }}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -235,14 +253,12 @@ export default function IssuesTable({ issues: propIssues = [], onIssueSelect, lo
                       sx={{
                         px: 1,
                         py: 0.25,
-                        borderRadius: 3,
+                        borderRadius: 0.5,
                         fontSize: 11,
-                        fontWeight: 600,
-                        backgroundColor: 
-                          issue.status === 'new' ? newTheme.colors.status.new :
-                          issue.status === 'in-progress' ? newTheme.colors.status.inProgress :
-                          issue.status === 'resolved' ? newTheme.colors.status.resolved : '#f0f0f0',
-                        color: '#ffffff',
+                        fontWeight: 500,
+                        backgroundColor: '#f0f0f0',
+                        color: '#424242',
+                        border: '1px solid #e0e0e0',
                         width: 85,
                         textAlign: 'center',
                         display: 'inline-block',

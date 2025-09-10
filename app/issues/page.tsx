@@ -153,6 +153,15 @@ export default function Issues() {
                 fontSize: 14,
                 borderRadius: 1,
                 '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#b0d1c7',
               },
             }}
           />
@@ -169,6 +178,15 @@ export default function Issues() {
                 fontSize: 14,
                 borderRadius: 1,
                 '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#b0d1c7',
               },
             }}
           >
@@ -197,7 +215,7 @@ export default function Issues() {
             color: '#1a1a1a',
           },
           '& .MuiTabs-indicator': {
-            backgroundColor: '#424242',
+            backgroundColor: '#b0d1c7',
           },
         }}
       >

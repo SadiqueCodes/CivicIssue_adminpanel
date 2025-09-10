@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import AddUserModal from '@/components/Users/AddUserModal';
+import toast from 'react-hot-toast';
 import {
   Box,
   Typography,
@@ -21,10 +23,12 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  Menu,
 } from '@mui/material';
 import {
   Search,
   MoreVert,
+  Delete,
   PersonAdd,
   Email,
   Phone,
@@ -47,55 +51,60 @@ interface User {
 const mockUsers: User[] = [
   {
     id: '1',
-    name: 'John Smith',
-    email: 'john.smith@example.com',
-    phone: '+1 555-0123',
+    name: 'Rajesh Kumar',
+    email: 'rajesh.kumar@gmail.com',
+    phone: '+91 98765-43210',
     role: 'citizen',
     status: 'active',
     issuesReported: 12,
     joinedAt: new Date('2023-01-15'),
-    location: 'Downtown',
+    location: 'Hinoo, Ranchi',
   },
   {
     id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah.j@city.gov',
-    phone: '+1 555-0456',
+    name: 'Priya Sharma',
+    email: 'priya.sharma@jharkhandgov.in',
+    phone: '+91 98765-43211',
     role: 'staff',
     status: 'active',
     issuesReported: 0,
     joinedAt: new Date('2022-06-20'),
-    location: 'City Hall',
+    location: 'Project Building, Ranchi',
   },
   {
     id: '3',
-    name: 'Mike Davis',
-    email: 'mike.davis@example.com',
+    name: 'Amit Kumar Singh',
+    email: 'amit.singh@yahoo.in',
     role: 'citizen',
     status: 'inactive',
     issuesReported: 3,
     joinedAt: new Date('2023-03-10'),
-    location: 'Suburbs',
+    location: 'Doranda, Ranchi',
   },
   {
     id: '4',
-    name: 'Admin User',
-    email: 'admin@city.gov',
-    phone: '+1 555-0789',
+    name: 'Sunita Devi',
+    email: 'admin@jharkhandgov.in',
+    phone: '+91 98765-43212',
     role: 'admin',
     status: 'active',
     issuesReported: 0,
     joinedAt: new Date('2022-01-01'),
+    location: 'Ranchi Municipal Corporation',
   },
 ];
 
 export default function Users() {
+  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
+  const [users, setUsers] = useState(mockUsers);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const filteredUsers = mockUsers.filter(user => {
+  const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
@@ -109,6 +118,24 @@ export default function Users() {
       case 'citizen': return '#757575';
       default: return '#9e9e9e';
     }
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>, userId: string) => {
+    setMenuAnchorEl(event.currentTarget);
+    setSelectedUserId(userId);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setSelectedUserId(null);
+  };
+
+  const handleRemoveUser = () => {
+    if (selectedUserId) {
+      setUsers(prev => prev.filter(user => user.id !== selectedUserId));
+      toast.success('User removed successfully');
+    }
+    handleMenuClose();
   };
 
   const formatDate = (date: Date) => {
@@ -128,6 +155,7 @@ export default function Users() {
         <Button
           variant="outlined"
           startIcon={<PersonAdd />}
+          onClick={() => setAddUserModalOpen(true)}
           sx={{
             borderColor: '#e0e0e0',
             color: '#424242',
@@ -150,7 +178,7 @@ export default function Users() {
                 Total Users
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                {mockUsers.length}
+                {users.length}
               </Typography>
             </CardContent>
           </Card>
@@ -162,7 +190,7 @@ export default function Users() {
                 Active Users
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                {mockUsers.filter(u => u.status === 'active').length}
+                {users.filter(u => u.status === 'active').length}
               </Typography>
             </CardContent>
           </Card>
@@ -174,7 +202,7 @@ export default function Users() {
                 Citizens
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                {mockUsers.filter(u => u.role === 'citizen').length}
+                {users.filter(u => u.role === 'citizen').length}
               </Typography>
             </CardContent>
           </Card>
@@ -186,7 +214,7 @@ export default function Users() {
                 Staff Members
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                {mockUsers.filter(u => u.role === 'staff' || u.role === 'admin').length}
+                {users.filter(u => u.role === 'staff' || u.role === 'admin').length}
               </Typography>
             </CardContent>
           </Card>
@@ -214,6 +242,15 @@ export default function Users() {
                 fontSize: 14,
                 borderRadius: 1,
                 '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#b0d1c7',
               },
             }}
           />
@@ -230,6 +267,15 @@ export default function Users() {
                 fontSize: 14,
                 borderRadius: 1,
                 '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#b0d1c7',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#b0d1c7',
               },
             }}
           >
@@ -328,17 +374,25 @@ export default function Users() {
                       </Box>
                     </TableCell>
                     <TableCell sx={{ borderBottom: '1px solid #f0f0f0' }}>
-                      <Chip
-                        label={user.role}
-                        size="small"
+                      <Box
+                        component="span"
                         sx={{
-                          backgroundColor: '#f0f0f0',
-                          color: getRoleColor(user.role),
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: 0.5,
                           fontSize: 11,
-                          height: 20,
+                          fontWeight: 500,
+                          backgroundColor: '#f0f0f0',
+                          color: '#424242',
+                          border: '1px solid #e0e0e0',
+                          width: 85,
+                          textAlign: 'center',
+                          display: 'inline-block',
                           textTransform: 'capitalize',
                         }}
-                      />
+                      >
+                        {user.role}
+                      </Box>
                     </TableCell>
                     <TableCell sx={{ borderBottom: '1px solid #f0f0f0' }}>
                       <Box
@@ -371,7 +425,11 @@ export default function Users() {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ borderBottom: '1px solid #f0f0f0' }}>
-                      <IconButton size="small" sx={{ color: '#757575' }}>
+                      <IconButton 
+                        size="small" 
+                        sx={{ color: '#757575' }}
+                        onClick={(e) => handleMenuClick(e, user.id)}
+                      >
                         <MoreVert sx={{ fontSize: 18 }} />
                       </IconButton>
                     </TableCell>
@@ -401,6 +459,42 @@ export default function Users() {
           }}
         />
       </Card>
+
+      {/* User Actions Menu */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          }
+        }}
+      >
+        <MenuItem 
+          onClick={handleRemoveUser}
+          sx={{ 
+            color: '#f44336',
+            fontSize: 14,
+            '&:hover': {
+              backgroundColor: '#ffebee',
+            }
+          }}
+        >
+          <Delete sx={{ fontSize: 16, mr: 1 }} />
+          Remove User
+        </MenuItem>
+      </Menu>
+
+      {/* Add User Modal */}
+      <AddUserModal
+        open={addUserModalOpen}
+        onClose={() => setAddUserModalOpen(false)}
+        onUserAdded={(newUser) => {
+          setUsers(prev => [...prev, newUser]);
+        }}
+      />
     </Box>
   );
 }

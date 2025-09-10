@@ -83,7 +83,7 @@ export function useDashboardData() {
     stats: data.stats,
     issues: data.issues,
     activities: data.activities,
-    loading: isLoading,
+    loading: isLoading && !data.stats.totalIssues, // Only show loading if we don't have default data
     error,
     refetch,
   };
