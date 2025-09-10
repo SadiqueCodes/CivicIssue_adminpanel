@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -48,12 +49,12 @@ const mockIssues: Issue[] = [
   {
     id: '#1284',
     title: 'Large pothole causing traffic delays',
-    description: 'Major pothole on Main Street intersection causing significant traffic delays and potential vehicle damage.',
+    description: 'Major pothole on MG Road intersection causing significant traffic delays and potential vehicle damage.',
     category: 'Road',
     priority: 'high',
     status: 'new',
-    location: 'Main St & 5th Ave',
-    reportedBy: 'John Smith',
+    location: 'Station Road, Ranchi',
+    reportedBy: 'Rajesh Kumar',
     reportedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
   },
   {
@@ -63,9 +64,9 @@ const mockIssues: Issue[] = [
     category: 'Lighting',
     priority: 'medium',
     status: 'in-progress',
-    location: 'Park Avenue',
+    location: 'Circular Road, Jamshedpur',
     assignedTo: 'Team A',
-    reportedBy: 'Sarah Johnson',
+    reportedBy: 'Priya Singh',
     reportedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
   },
   {
@@ -75,14 +76,15 @@ const mockIssues: Issue[] = [
     category: 'Sanitation',
     priority: 'low',
     status: 'resolved',
-    location: 'City Center Plaza',
+    location: 'Kadma, Jamshedpur',
     assignedTo: 'Team C',
-    reportedBy: 'Mike Davis',
+    reportedBy: 'Amit Sharma',
     reportedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
   },
 ];
 
 export default function Issues() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -233,11 +235,14 @@ export default function Issues() {
               sx={{
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
+                cursor: 'pointer',
                 '&:hover': {
-                  borderColor: '#bdbdbd',
+                  borderColor: '#b0d1c7',
+                  backgroundColor: '#fafafa',
                 },
-                transition: 'border-color 0.2s',
+                transition: 'all 0.2s',
               }}
+              onClick={() => router.push(`/issues/${issue.id.replace('#', '')}`)}
             >
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -246,28 +251,38 @@ export default function Issues() {
                       <Typography variant="body2" sx={{ color: '#757575', fontSize: 12 }}>
                         {issue.id}
                       </Typography>
-                      <Chip
-                        label={issue.category}
-                        size="small"
-                        sx={{
-                          backgroundColor: '#f5f5f5',
-                          color: '#424242',
-                          fontSize: 11,
-                          height: 20,
-                        }}
-                      />
                       <Box
+                        component="span"
                         sx={{
-                          px: 1,
-                          py: 0.25,
+                          px: 0.75,
+                          py: 0.125,
                           borderRadius: 0.5,
+                          fontSize: 10,
+                          fontWeight: 500,
                           backgroundColor: '#f0f0f0',
+                          color: '#424242',
                           border: '1px solid #e0e0e0',
+                          display: 'inline-block',
                         }}
                       >
-                        <Typography variant="caption" sx={{ fontSize: 10, color: '#424242' }}>
-                          {issue.status}
-                        </Typography>
+                        {issue.category}
+                      </Box>
+                      <Box
+                        component="span"
+                        sx={{
+                          px: 0.75,
+                          py: 0.125,
+                          borderRadius: 0.5,
+                          fontSize: 10,
+                          fontWeight: 500,
+                          backgroundColor: '#f0f0f0',
+                          color: '#424242',
+                          border: '1px solid #e0e0e0',
+                          display: 'inline-block',
+                          textTransform: 'capitalize',
+                        }}
+                      >
+                        {issue.status}
                       </Box>
                     </Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 1, fontSize: 16 }}>
